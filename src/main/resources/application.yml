@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: eureka-server
+
+server:
+  servlet:
+    context-path: /
+## actuator (optional)
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
+#  endpoint:
+#    health:
+#      show-details: always
+
+eureka:
+  instance:
+    # let instance id be unique:
+    instance-id: ${HOSTNAME:${spring.application.name}:${random.value}}
+    prefer-ip-address: false
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    # defaultZone is filled per-node (see below)
+    service-url:
+      defaultZone: ${EUREKA_PEERS:http://eureka-1:8761/eureka/,http://eureka-2:8762/eureka/,http://eureka-3:8763/eureka/}
+
+  server:
+    # tune eviction / replication as needed
+    eviction-interval-timer-in-ms: 5000
+    # leave self-preservation enabled by default (recommended for production)
+    enable-self-preservation: true
+

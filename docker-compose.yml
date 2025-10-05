@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  eureka1:
+    build: .
+    container_name: eureka-1
+    hostname: eureka-1
+    ports:
+      - "8761:8761"
+    environment:
+      - SERVER_PORT=8761
+      - SPRING_PROFILES_ACTIVE=peer1
+      # SPRING_APPLICATION_JSON is convenient to inject complex properties:
+      - SPRING_APPLICATION_JSON={"eureka":{"client":{"serviceUrl":{"defaultZone":"http://eureka-2:8762/eureka/,http://eureka-3:8763/eureka/"},"register-with-eureka":true,"fetch-registry":true},"instance":{"hostname":"eureka-1"}}}
+
+  eureka2:
+    build: .
+    container_name: eureka-2
+    hostname: eureka-2
+    ports:
+      - "8762:8762"
+    environment:
+      - SERVER_PORT=8762
+      - SPRING_PROFILES_ACTIVE=peer2
+      - SPRING_APPLICATION_JSON={"eureka":{"client":{"serviceUrl":{"defaultZone":"http://eureka-1:8761/eureka/,http://eureka-3:8763/eureka/"},"register-with-eureka":true,"fetch-registry":true},"instance":{"hostname":"eureka-2"}}}
+
+  eureka3:
+    build: .
+    container_name: eureka-3
+    hostname: eureka-3
+    ports:
+      - "8763:8763"
+    environment:
+      - SERVER_PORT=8763
+      - SPRING_PROFILES_ACTIVE=peer3
+      - SPRING_APPLICATION_JSON={"eureka":{"client":{"serviceUrl":{"defaultZone":"http://eureka-1:8761/eureka/,http://eureka-2:8762/eureka/"},"register-with-eureka":true,"fetch-registry":true},"instance":{"hostname":"eureka-3"}}}
+
+networks:
+  default:
+    driver: bridge
